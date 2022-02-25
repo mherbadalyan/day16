@@ -8,9 +8,9 @@ public class Main {
 
         printTime(150);
 
-        System.out.println(isPrime(17));
+        System.out.println(isPrime(41));
 
-        printPalindromeNums(1600, 2100);
+        printPalindromeNums(1400, 2100);
 
         printLikePascalCase("cAT");
 
@@ -26,7 +26,9 @@ public class Main {
 
         printMatrixLikeSnake(5, 10);
 
-        printRotateMatrix(5, 5);
+        System.out.println("Enter matrix size and enter 1 to rotate it 90 degrees or" +
+                " 2 to rotate it 180 degrees");
+        printRotateMatrix(5,2);
     }
 
 
@@ -87,7 +89,7 @@ public class Main {
      * @return
      */
     private static boolean isPrime(int num) {
-        for (int i = 2; i < num; i++) {
+        for (int i = 2; i < num/2 ; i++) {
             if (num % i == 0) {
                 return false;
             }
@@ -98,12 +100,9 @@ public class Main {
     /**
      * task6
      * printing all palindrome numbers between given two four-digit numbers
-     *
-     * @param A
-     * @param B
      */
-    private static void printPalindromeNums(int A, int B) {
-        for (int i = A; i <= B; i++) {
+    private static void printPalindromeNums(int start, int end) {
+        for (int i = start; i <= end; i++) {
             if (isPalindrome(i)) {
                 System.out.println(i);
             }
@@ -117,6 +116,10 @@ public class Main {
      * @param str
      */
     private static void printLikePascalCase(String str) {
+        if (str == null){
+            System.out.println("Error");
+            return;
+        }
         System.out.println(str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase());
     }
 
@@ -149,6 +152,10 @@ public class Main {
      * @param index
      */
     private static void printElementInSequence(double b1, double q, int index) {
+        if (b1 == 0 || q == 0){
+            System.out.println("Invalid numbers");
+            return;
+        }
         for (int i = 1; i < index; i++) {
             b1 *= q;
         }
@@ -275,73 +282,28 @@ public class Main {
      * task14
      * rotating matrix 90 or 180 degrees and printing matrix
      *
-     * @param row
-     * @param colum
      */
-    private static void printRotateMatrix(int row, int colum) {
-        int num = 1;
-        int count1 = row - 1;
-        int matrix[][] = new int[row][colum];
-
-        //filling original matrix
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < colum; j++) {
-                matrix[i][j] = num;
-                num++;
-            }
+    private static void printRotateMatrix(int size, int choice) {
+        if (choice != 1 && choice!=2 || size <2){
+            System.out.println("Invalid size or choice");
+            return;
         }
+        int[][] matrix = fillMatrix(size);
+
         System.out.println("Original matrix \n");
         printMatrix(matrix);
         System.out.println();
 
-        System.out.println("Enter number 1 to rotate matrix 90 degrees" +
-                "and 2 to rotate 180 degrees");
-        Scanner scanner = new Scanner(System.in);
-        String choice = scanner.nextLine();
-
-        switch (choice) {
-            case "1": {
-                int matrix90[][] = new int[row][colum];
-
-                for (int i = 0; i < row; i++, count1--) {
-                    for (int j = 0; j < colum; j++) {
-                        matrix90[j][count1] = matrix[i][j];
-                    }
-                }
-                System.out.println("90 degrees rotated matrix \n");
-                printMatrix(matrix90);
-            }
-            break;
-
-            case "2": {
-                int temp;
-                for (int i = 0; i < row / 2; i++, count1--) {
-                    for (int j = 0; j < colum; j++) {
-                        temp = matrix[i][j];
-                        matrix[i][j] = matrix[count1][row - 1 - j];
-                        matrix[count1][row - 1 - j] = temp;
-                    }
-                }
-                if (!isEven(row)) {
-                    for (int i = 0; i < colum / 2; i++) {
-                        temp = matrix[row / 2][i];
-                        matrix[row / 2][i] = matrix[row / 2][row - 1 - i];
-                        matrix[row / 2][row - 1 - i] = temp;
-                    }
-                }
-                System.out.println("180 degrees rotated matrix \n");
-                printMatrix(matrix);
-                break;
-            }
-            default: {
-                System.out.println("Illegal choice");
-                break;
-            }
+        if (choice == 1){
+            matrix = rotateMatix90(matrix,size);
+        }else {
+            matrix = rotateMatix180(matrix,size);
         }
+        printMatrix(matrix);
     }
 
-    //Helper methods
 
+    //Helper methods
     /**
      * checking is given number is even
      *
@@ -374,5 +336,66 @@ public class Main {
             }
             System.out.println();
         }
+    }
+
+    /**
+     * rotating matrix 180 degrees
+     * @param matrix
+     * @param size
+     * @return
+     */
+    private static int[][] rotateMatix180(int[][] matrix, int size) {
+        int temp;
+        int index = size-1;
+        for (int i = 0; i < size / 2; i++, index--) {
+            for (int j = 0; j < size; j++) {
+                temp = matrix[i][j];
+                matrix[i][j] = matrix[index][size - 1 - j];
+                matrix[index][size - 1 - j] = temp;
+            }
+        }
+        if (!isEven(size)) {
+            for (int i = 0; i < size / 2; i++) {
+                temp = matrix[size / 2][i];
+                matrix[size / 2][i] = matrix[size / 2][size - 1 - i];
+                matrix[size / 2][size - 1 - i] = temp;
+            }
+        }
+        return matrix;
+    }
+
+    /**
+     * rotating matrix 90 degrees
+     * @param matrix
+     * @param size
+     * @return
+     */
+    private static int[][] rotateMatix90(int[][] matrix, int size) {
+        int index = size - 1;
+        int matrix90[][] = new int[size][size];
+
+        for (int i = 0; i < size; i++, index--) {
+            for (int j = 0; j < size; j++) {
+                matrix90[j][index] = matrix[i][j];
+            }
+        }
+        return matrix90;
+    }
+
+    /**
+     * filling matrix from 1 to given size
+     * @param size
+     * @return
+     */
+    private static int[][] fillMatrix(int size) {
+        int num = 1;
+        int[][] matrix = new int[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                matrix[i][j] = num;
+                num++;
+            }
+        }
+        return matrix;
     }
 }
